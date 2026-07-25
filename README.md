@@ -12,7 +12,7 @@ production runs as **a single service on one URL**.
 
 ## Live demo
 
-- **URL:** _<add your deployed URL here>_
+- **URL:** https://ajaia-docs-mkhz.onrender.com/
 - **Demo accounts** (password `password123` for all):
   - `alice@demo.com` — owns a document already shared with Bob
   - `bob@demo.com`

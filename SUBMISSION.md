@@ -17,7 +17,7 @@
 
 ## Live deployment
 
-- **URL:** _<add deployed URL>_
+- **URL:** https://ajaia-docs-mkhz.onrender.com/
 - **Seeded accounts** (password `password123`): `alice@demo.com`, `bob@demo.com`,
   `carol@demo.com`. Alice owns a document pre-shared with Bob.
 
