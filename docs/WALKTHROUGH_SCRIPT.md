@@ -1,133 +1,155 @@
-# Walkthrough Video Script (~4 minutes)
+# Walkthrough Video Script (~5 minutes)
 
-Target length: **3:45–4:15**. Read naturally — the timings are a guide, not a metronome.
-Have two browser windows ready: **Window A** (normal) logged out, **Window B**
-(incognito) for the second user. Live URL: https://ajaia-docs-mkhz.onrender.com/
+The app grew well past the core, so this covers a lot. Target **4:45–5:15**. Segments
+marked _(trim if tight)_ can be dropped to hit 5:00 — keep the ⭐ ones.
 
-Seeded accounts (password `password123`): `alice@demo.com`, `bob@demo.com`, `carol@demo.com`.
-
----
-
-## 0:00 – 0:20 · Intro
-
-> "Hi — this is Ajaia Docs, a lightweight collaborative document editor built for the
-> AI-Native Full Stack assignment. It's a React and TipTap frontend with a FastAPI
-> backend, JWT auth, and Postgres, deployed as a single service on Render. Let me walk
-> through the main flow, then a couple of implementation decisions and how I used AI."
-
-*(Screen: the login page.)*
+**Setup before recording**
+- Two browser windows: **Window A** (Alice), **Window B** (incognito, for Bob).
+- A sample `.docx` or `.md` on the desktop to import.
+- Pre-load the live site once so it's warm (Render free tier sleeps): https://ajaia-docs-mkhz.onrender.com/
+- Zoom the browser to ~110–125% so text is readable.
+- Seeded accounts (password `password123`): `alice@demo.com`, `bob@demo.com`, `carol@demo.com`.
 
 ---
 
-## 0:20 – 2:15 · Product demo (the core)
+## 0:00 – 0:20 · Intro ⭐
 
-**Log in** *(type or show the pre-filled Alice credentials)*
-
-> "I'll sign in as Alice. Accounts are seeded with hashed passwords — I'll come back to
-> auth in a second."
-
-**Dashboard**
-
-> "This is the workspace. Left is navigation — all documents, the ones I own, and ones
-> shared with me. There's search up top, a documents table with owner, access level and
-> last-modified, and an overview panel showing how my documents split between owned and
-> shared."
-
-**Create + edit** *(click New document)*
-
-> "Let me create a document. The editor supports real rich text — bold, italic,
-> underline, headings, and bulleted and numbered lists."
-
-*(Type a heading, some text, apply bold/italic, add a list.)*
-
-> "Notice it autosaves — 'All changes saved' up here. I'll rename it in the title bar…
-> and if I refresh, the content and formatting persist, because it's stored server-side."
-
-*(Rename, then refresh the page to show persistence.)*
-
-**Import** *(go back to dashboard → Import file → pick a .docx or .md)*
-
-> "I can also import a file. I'll upload a Word document — the server converts it with
-> mammoth into an editable rich-text document, preserving headings, bold, and lists.
-> Supported types are .txt, .md, and .docx, and that's stated in the UI."
-
-**Share** *(open a doc → Share → add `bob@demo.com` as 'Can edit')*
-
-> "Now sharing. As the owner, I share by email and choose a role — 'Can edit' or
-> 'View only'. I'll give Bob edit access."
-
-**Switch to Bob** *(Window B / incognito → log in as bob@demo.com)*
-
-> "In a separate session as Bob, the document now shows up under 'Shared with me', and
-> because he's an editor, he can open and edit it."
-
-**Access control** *(mention Carol — optionally log in as carol)*
-
-> "Carol, who wasn't shared, doesn't see it at all — and if she tried the URL directly,
-> the API returns 403. Access is enforced on the server, not just hidden in the UI."
-
-**Export** *(back in a doc → Export → Markdown or PDF)*
-
-> "Finally, I can export any document to Markdown or PDF."
+> "This is Ajaia Docs — a collaborative document editor. React + TipTap on the front,
+> FastAPI + Postgres on the back, JWT auth, deployed as a single service on Render.
+> Beyond the core editor it does live editing, comments and suggestions, version
+> history, and an AI chat over folders of documents. Let me show the main flow."
 
 ---
 
-## 2:15 – 3:10 · Key implementation decisions (talk over code — keep it brief)
+## 0:20 – 1:10 · Dashboard + editing ⭐
 
-*(Open the repo / editor. Show only these, ~15–20s each. Don't read code line by line.)*
+Sign in as **Alice**.
 
-**1. `backend/app/auth.py`**
+> "This is the workspace — a sidebar with All / Owned / Shared and Folders, a search
+> bar, a notification bell, and a documents table with owner, access level, and
+> last-modified. On the right, an overview of my documents."
 
-> "The heart of sharing is one helper — `get_document_for_user`. Every document route
-> goes through it to resolve the caller's role — owner, editor, or viewer — and return a
-> consistent 403 or 404. Centralizing it is why the access rules stay correct and are
-> easy to test. Auth itself is a signed JWT, accepted as a Bearer token or an HTTP-only
-> cookie."
+Open a document (or **New document**), then type and format.
 
-**2. `backend/app/security.py`**
+> "The editor is real rich text — bold, italic, underline, headings, lists — and it
+> autosaves; you can see 'All changes saved'. I'll rename it in the title bar, and if I
+> refresh, everything persists, because it's stored server-side in Postgres."
 
-> "Because document content is HTML that gets re-rendered — including into the PDF-export
-> iframe — I sanitize it server-side on every save and import with an allow-list. That
-> closes a stored-XSS path that could otherwise steal a token."
-
-**3. `backend/tests/test_sharing.py`**
-
-> "And the access-control matrix is covered by automated tests — non-collaborators get
-> 403, viewers are read-only, only owners can delete or re-share. Seventeen tests total."
+*(Refresh to prove persistence.)*
 
 ---
 
-## 3:10 – 3:45 · AI workflow
+## 1:10 – 1:35 · Version history _(trim if tight)_
 
-> "On AI: I used Claude Code as a pair to scaffold the app, write the tests, and even
-> drive a browser to QA the flows and capture screenshots. It sped up the boilerplate —
-> models, the API client, the editor wiring — enormously.
+Click **History**.
+
+> "Every edit is snapshotted as I work. From History I can see prior versions and
+> restore any of them — and the restore itself is saved first, so it's reversible."
+
+*(Restore a version to show it swap, then carry on.)*
+
+---
+
+## 1:35 – 2:00 · Import ⭐
+
+Back to the dashboard → **Import file** → pick a `.docx`.
+
+> "I can import a file into a new document. This Word doc is converted server-side with
+> mammoth into editable rich text — headings, bold, lists preserved. Supported types
+> are .txt, .md, and .docx, and that's stated in the UI."
+
+---
+
+## 2:00 – 2:50 · Folders + AI chat (RAG) ⭐⭐  — the AI-native piece
+
+In the sidebar, create a **folder** and file a couple of documents into it (use the
+folder selector in the editor, or create docs while the folder is selected).
+
+> "Here's the AI-native part. I can group documents into a folder, which becomes a
+> knowledge base. I'll click 'Chat with folder' and ask a question."
+
+Ask something answerable from the folder's docs, e.g. *"What's the pricing and how do I
+invite teammates?"*
+
+> "The answer is grounded only in this folder's documents, and it cites which documents
+> it used. On the backend that's retrieval-augmented generation — I pull the folder's
+> contents into the prompt and call an LLM through OpenRouter. It's env-gated, so if no
+> API key is set the rest of the app is unaffected and chat just shows a clear message."
+
+---
+
+## 2:50 – 3:35 · Sharing + notifications + live editing ⭐⭐
+
+Open a doc → **Share** → add `bob@demo.com` as _Can edit_.
+
+> "Sharing is by email with an edit or view-only role, enforced on the server."
+
+Switch to **Window B** as **Bob**.
+
+> "As Bob, there's a notification that Alice shared a document, and it shows under
+> 'Shared with me'."
+
+Open the same doc in both windows, place them side by side.
+
+> "And it's live — you can see presence up here, who else is in the document. Watch:
+> when Alice types…"
+
+*(Type in Window A; show it appear in Window B.)*
+
+> "…it syncs to Bob in real time over a WebSocket. Persistence still goes through
+> autosave; this channel just propagates the live state."
+
+---
+
+## 3:35 – 4:05 · Comments + suggestions ⭐
+
+In the doc, select some text → **Comments** panel.
+
+> "Anyone with access — even view-only — can select text and leave a comment, or suggest
+> an edit."
+
+Switch to **Suggest edit**, propose a replacement, submit.
+
+> "Here I suggest replacing this text. The owner or an editor sees it and can Accept —
+> which rewrites the document — or dismiss it."
+
+*(Click **Accept**; show the text change in the document.)*
+
+> "Accepting applied the change and resolved the suggestion."
+
+---
+
+## 4:05 – 4:35 · Key decisions + how AI helped ⭐
+
+*(Show ~2 files briefly — why, not line-by-line.)*
+
+> "A couple of engineering notes. Access control lives in one helper — every route and
+> the WebSocket resolve owner/editor/viewer through it, which is why the rules stay
+> consistent and the tests are short. Document HTML is sanitized server-side on every
+> save to prevent stored XSS, including in the PDF-export path. There are 35 automated
+> tests across auth, sharing, versions, comments, folders, and the WebSocket.
 >
-> But I didn't take output blindly. Three concrete examples: it produced a passlib and
-> bcrypt combo that broke at runtime, so I pinned a compatible version and re-ran the
-> suite. Its first PDF export used a legacy synchronous document-writing API — an XSS
-> anti-pattern — so I rewrote it to a sandboxed iframe. And my strict CSP initially
-> blocked the web fonts in production — I caught that in the browser console and fixed the
-> font-src directive. Every 'it works' is backed by a test, an HTTP status, or a
-> screenshot."
+> On AI: I used Claude Code to scaffold, write tests, and even drive a browser to QA
+> flows and capture screenshots. But I didn't take output on faith — it produced a
+> passlib/bcrypt combo that broke, which I pinned and re-ran; its first PDF export used
+> an unsafe DOM-write, which I replaced with a sandboxed iframe; and my strict CSP
+> blocked web fonts in production until I caught it in the console. Every 'it works' is
+> backed by a test, a status code, or a screenshot."
 
 ---
 
-## 3:45 – 4:10 · Deprioritized + close
+## 4:35 – 5:00 · Deprioritized + close ⭐
 
-> "What I deliberately cut: real-time co-editing with live cursors — that's a project on
-> its own, so I chose single-writer autosave. I also kept auth to seeded accounts instead
-> of full signup. With another few hours I'd add presence indicators and document version
-> history.
+> "What I deliberately left: live editing is presence plus last-writer-wins sync, not
+> full CRDT conflict-free merge; folder chat stuffs documents into context rather than
+> using a vector database — both are fine at this scale and are the honest next steps.
 >
-> That's Ajaia Docs — the code, tests, and a live deployment are all linked in the README.
+> That's Ajaia Docs — code, 35 tests, and a live deployment, all linked in the README.
 > Thanks for watching."
 
 ---
 
-### Quick recording checklist
-- [ ] Two windows ready (Alice in one, Bob incognito)
-- [ ] A sample `.docx` or `.md` on the desktop to import
-- [ ] Live site pre-loaded (avoid the cold-start wait on camera — hit it once first)
-- [ ] Zoom the browser to ~110–125% so text is readable
-- [ ] Keep the code portion to ~3 files, focus on *why* not *how*
+### Fast path (if you can only do ~3 min)
+Intro → editing + autosave + persistence → folders + AI chat → share + live editing +
+comments/suggestions → one AI-workflow example → close. (Drop version history, import,
+and the code walk.)
