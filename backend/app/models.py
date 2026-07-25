@@ -100,6 +100,25 @@ class Notification(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
 
+class Comment(Base):
+    """A comment or edit-suggestion anchored to a quoted span of a document."""
+
+    __tablename__ = "comments"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    document_id: Mapped[int] = mapped_column(
+        ForeignKey("documents.id"), nullable=False, index=True
+    )
+    author_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    author_name: Mapped[str] = mapped_column(String(120), nullable=False, default="")
+    kind: Mapped[str] = mapped_column(String(16), nullable=False, default="comment")  # or "suggestion"
+    quote: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    body: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    suggested_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resolved: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
+
+
 class DocumentVersion(Base):
     """A point-in-time snapshot of a document's title + content."""
 

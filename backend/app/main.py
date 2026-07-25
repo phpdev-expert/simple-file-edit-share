@@ -9,7 +9,16 @@ from sqlalchemy import inspect, text
 
 from .core import config
 from .core.database import Base, SessionLocal, engine
-from .routers import auth, documents, folders, notifications, shares, uploads, ws
+from .routers import (
+    auth,
+    comments,
+    documents,
+    folders,
+    notifications,
+    shares,
+    uploads,
+    ws,
+)
 from .seed import seed
 
 # Fail fast: never run a production (HTTPS) deploy with the default JWT secret,
@@ -60,6 +69,7 @@ app.include_router(shares.router)
 app.include_router(uploads.router)
 app.include_router(notifications.router)
 app.include_router(folders.router)
+app.include_router(comments.router)
 app.include_router(ws.router)
 
 

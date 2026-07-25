@@ -94,6 +94,25 @@ class VersionSummary(BaseModel):
     created_at: datetime
 
 
+class CommentCreate(BaseModel):
+    kind: Literal["comment", "suggestion"] = "comment"
+    quote: str = Field(default="", max_length=4000)
+    body: str = Field(default="", max_length=4000)
+    suggested_text: Optional[str] = Field(default=None, max_length=4000)
+
+
+class CommentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    kind: str
+    quote: str
+    body: str
+    suggested_text: Optional[str] = None
+    author_name: str
+    resolved: bool
+    created_at: datetime
+
+
 class FolderCreate(BaseModel):
     name: str = Field(min_length=1, max_length=120)
 

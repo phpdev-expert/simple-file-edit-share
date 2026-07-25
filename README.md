@@ -36,6 +36,7 @@ receives a clear "no access" screen.
 | **Live editing** | Per-document **presence** (see who's viewing) and **live content sync** over WebSockets — edits appear in other open sessions in real time. |
 | **Notifications** | In-app bell with unread badge; the recipient is notified when a document is shared with them. |
 | **Version history** | Edits are snapshotted (throttled) as you work; open **History** to view and **restore** any prior version. |
+| **Comments & suggestions** | Select text to **comment** or **suggest an edit**; even view-only collaborators can. Owners/editors **accept** a suggestion (it rewrites the text) or resolve/dismiss. |
 | **Folders + AI chat (RAG)** | Group documents into a **folder**, then **chat with the folder** — an LLM answers grounded in that folder's contents and cites the source documents. |
 | **Export** | Download as **Markdown**, or print/save as **PDF**. |
 | **Auth** | Seeded users, bcrypt-hashed passwords, **JWT** (HS256) sent as a Bearer token and mirrored in an HTTP-only cookie. |
@@ -86,7 +87,7 @@ source .venv/bin/activate
 pytest
 ```
 
-30 tests cover JWT authentication, the sharing access-control model, file-import
+35 tests cover JWT authentication, the sharing access-control model, file-import
 behavior (including `.docx` conversion), and security hardening (HTML sanitization,
 response headers).
 

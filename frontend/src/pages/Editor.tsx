@@ -6,7 +6,8 @@ import Underline from "@tiptap/extension-underline";
 import { api, ApiError, DocDetail, Folder } from "../api";
 import ShareDialog from "../components/ShareDialog";
 import VersionHistory from "../components/VersionHistory";
-import { IconHistory } from "../components/icons";
+import CommentsPanel from "../components/CommentsPanel";
+import { IconComment, IconHistory } from "../components/icons";
 import { useDocRealtime } from "../useDocRealtime";
 import { exportMarkdown, exportPdf } from "../export";
 
@@ -24,6 +25,7 @@ export default function EditorPage() {
   const [showShare, setShowShare] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   const [folders, setFolders] = useState<Folder[]>([]);
 
   const canEdit = doc?.role === "owner" || doc?.role === "editor";
@@ -172,6 +174,13 @@ export default function EditorPage() {
             ))}
           </select>
         )}
+        <button
+          className="btn-secondary"
+          onClick={() => setShowComments((v) => !v)}
+          title="Comments & suggestions"
+        >
+          <IconComment size={17} /> Comments
+        </button>
         <button className="btn-secondary" onClick={() => setShowHistory(true)} title="Version history">
           <IconHistory size={17} /> History
         </button>
@@ -220,6 +229,14 @@ export default function EditorPage() {
           canEdit={canEdit}
           onClose={() => setShowHistory(false)}
           onRestored={(html) => editor?.commands.setContent(html || "<p></p>")}
+        />
+      )}
+      {showComments && (
+        <CommentsPanel
+          docId={docId}
+          editor={editor}
+          canEdit={canEdit}
+          onClose={() => setShowComments(false)}
         />
       )}
     </>

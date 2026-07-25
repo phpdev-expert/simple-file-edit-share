@@ -98,6 +98,15 @@ snapshot (`services/versions.py`, at most one per ~45s, pruned to the last 30) s
 history is useful without a row per keystroke. Restore snapshots the current state
 first, so it's itself reversible.
 
+**Comments & suggestions.** Both are stored as separate `Comment` records keyed to
+the **quoted text** (not embedded marks in the content). This is a deliberate choice:
+it lets even view-only collaborators comment and suggest without content-write access,
+needs no change to the HTML sanitizer, and stays robust across edits. A suggestion
+carries a `suggested_text`; **accepting** it (owner/editor only) does a find-and-
+replace of the quote in the editor and lets autosave persist — so the server stays out
+of fragile HTML surgery. Trade-off: no inline highlight painted into the doc; the
+anchor lives in the side panel. Adding someone's comment also notifies the owner.
+
 **Folders + RAG chat.** A `Folder` groups a user's documents into a knowledge base.
 `POST /api/folders/{id}/chat` gathers the folder's documents, strips them to text, and
 packs them (up to a char budget) into an LLM system prompt via **OpenRouter**
@@ -126,6 +135,8 @@ stand-in; **Alembic** is the right tool for anything beyond additive changes.
 - **Folder** — `id, name, owner_id, created_at`
 - **Notification** — `id, user_id, message, document_id?, read, created_at`
 - **DocumentVersion** — `id, document_id, title, content, author_name, created_at`
+- **Comment** — `id, document_id, author_name, kind (comment|suggestion), quote, body,
+  suggested_text?, resolved, created_at`
 
 The share unique constraint makes sharing idempotent: re-sharing updates the role
 instead of duplicating.
@@ -142,7 +153,8 @@ instead of duplicating.
 
 - **Character-level conflict-free co-editing (CRDT).** Live editing is presence +
   last-writer-wins sync, not Google-Docs-grade concurrent merge.
-- **Commenting / suggestion mode.** The remaining stretch item; not built.
+- **Inline comment highlights.** Comments/suggestions anchor to the quoted text in a
+  side panel rather than painting a persisted highlight into the document body.
 - **Vector-search RAG.** Folder chat stuffs documents into context (fine for small
   folders); no embeddings/chunking yet.
 - **Full auth (signup, verification, reset).** Seeded accounts exercise the model.
@@ -150,8 +162,8 @@ instead of duplicating.
 
 ## What I'd build next with another 2–4 hours
 
-1. **Commenting / suggestion mode** anchored to text ranges.
-2. **CRDT co-editing** (Yjs) for conflict-free concurrent typing + live cursors.
+1. **CRDT co-editing** (Yjs) for conflict-free concurrent typing + live cursors.
+2. **Inline comment highlights** persisted as a document mark.
 3. **Embeddings-based RAG** (chunk + vector search) so folder chat scales to large
    knowledge bases.
 4. **Alembic migrations** and a few **frontend component tests**.

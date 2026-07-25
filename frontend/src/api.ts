@@ -60,6 +60,17 @@ export interface ChatResponse {
   sources: string[];
 }
 
+export interface Comment {
+  id: number;
+  kind: "comment" | "suggestion";
+  quote: string;
+  body: string;
+  suggested_text: string | null;
+  author_name: string;
+  resolved: boolean;
+  created_at: string;
+}
+
 export interface LoginResponse {
   access_token: string;
   token_type: string;
@@ -152,6 +163,17 @@ export const api = {
   getVersions: (id: number) => request<DocVersion[]>(`/documents/${id}/versions`),
   restoreVersion: (id: number, versionId: number) =>
     request<DocDetail>(`/documents/${id}/versions/${versionId}/restore`, json("POST")),
+
+  // --- comments + suggestions ---
+  getComments: (id: number) => request<Comment[]>(`/documents/${id}/comments`),
+  addComment: (
+    id: number,
+    data: { kind: "comment" | "suggestion"; quote: string; body?: string; suggested_text?: string }
+  ) => request<Comment>(`/documents/${id}/comments`, json("POST", data)),
+  resolveComment: (id: number, cid: number) =>
+    request<Comment>(`/documents/${id}/comments/${cid}/resolve`, json("POST")),
+  acceptSuggestion: (id: number, cid: number) =>
+    request<Comment>(`/documents/${id}/comments/${cid}/accept`, json("POST")),
 
   // --- folders + RAG chat ---
   listFolders: () => request<Folder[]>("/folders"),
