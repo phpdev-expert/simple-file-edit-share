@@ -123,6 +123,19 @@ export const IconHistory = ({ size, className }: P) => (
   </svg>
 );
 
+export const IconFolder = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <path d="M4 20a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2Z" />
+  </svg>
+);
+
+export const IconSparkles = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6Z" />
+    <path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8Z" />
+  </svg>
+);
+
 export const IconDots = ({ size, className }: P) => (
   <svg {...base(size)} className={className}>
     <circle cx="12" cy="5" r="1.4" />

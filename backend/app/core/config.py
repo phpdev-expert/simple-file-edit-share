@@ -22,6 +22,13 @@ COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "0") == "1"
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB (.docx files are heavier than text)
 ALLOWED_UPLOAD_EXTS = {".txt", ".md", ".docx"}
 
+# LLM (folder RAG chat) via OpenRouter — OpenAI-compatible API. Optional:
+# when no key is set, the chat feature is cleanly disabled.
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "openai/gpt-4o")
+OPENROUTER_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
+LLM_ENABLED = bool(OPENROUTER_API_KEY)
+
 # Absolute path to the built frontend. This file lives at app/core/config.py, so
 # three levels up is the backend dir; the SPA build sits at repo/frontend/dist.
 _BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

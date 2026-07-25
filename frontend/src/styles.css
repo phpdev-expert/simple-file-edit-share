@@ -961,6 +961,169 @@ select:focus {
   font-size: 0.9rem;
 }
 
+/* ---------- Folders (sidebar) ---------- */
+.folders-group {
+  margin-top: 0.4rem;
+}
+.nav-label {
+  display: flex;
+  align-items: center;
+}
+.folder-add {
+  margin-left: auto;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-soft);
+}
+.folder-add:hover {
+  background: var(--accent-wash);
+  color: var(--accent-ink);
+  border-color: #d9d4ff;
+}
+.folder-empty {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+  font-style: italic;
+}
+.folder-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.folder-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ink-faint);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 0.02rem 0.4rem;
+}
+.nav-item.active .folder-count {
+  background: #fff;
+  color: var(--accent-ink);
+}
+.folder-select {
+  width: auto;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.82rem;
+  max-width: 170px;
+}
+.chat-cta {
+  color: var(--accent-ink);
+  border-color: #d9d4ff;
+  background: var(--accent-wash);
+}
+
+/* ---------- Folder chat panel ---------- */
+.chat-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 420px;
+  max-width: 94vw;
+  background: var(--surface);
+  border-left: 1px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  z-index: 60;
+  animation: slideIn 0.24s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes slideIn {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+.chat-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid var(--line);
+}
+.chat-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.chat-title svg {
+  color: var(--accent);
+}
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.chat-hint {
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.85rem;
+  line-height: 1.5;
+}
+.chat-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 90%;
+}
+.chat-msg.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.chat-bubble {
+  padding: 0.6rem 0.85rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+.chat-msg.user .chat-bubble {
+  background: var(--accent);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.chat-msg.assistant .chat-bubble {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 4px;
+}
+.chat-bubble.typing {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+.chat-sources {
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+}
+.chat-input {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.85rem 1.1rem;
+  border-top: 1px solid var(--line);
+}
+
 /* ---------- Motion & responsive ---------- */
 @keyframes rise {
   from {

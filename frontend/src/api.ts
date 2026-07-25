@@ -44,6 +44,22 @@ export interface DocVersion {
   created_at: string;
 }
 
+export interface Folder {
+  id: number;
+  name: string;
+  doc_count: number;
+}
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface ChatResponse {
+  answer: string;
+  sources: string[];
+}
+
 export interface LoginResponse {
   access_token: string;
   token_type: string;
@@ -114,8 +130,10 @@ export const api = {
   listDocuments: () => request<{ owned: DocSummary[]; shared: DocSummary[] }>("/documents"),
   createDocument: () => request<DocDetail>("/documents", json("POST")),
   getDocument: (id: number) => request<DocDetail>(`/documents/${id}`),
-  updateDocument: (id: number, data: { title?: string; content?: string }) =>
-    request<DocDetail>(`/documents/${id}`, json("PUT", data)),
+  updateDocument: (
+    id: number,
+    data: { title?: string; content?: string; folder_id?: number | null }
+  ) => request<DocDetail>(`/documents/${id}`, json("PUT", data)),
   deleteDocument: (id: number) => request<void>(`/documents/${id}`, json("DELETE")),
 
   // --- sharing ---
@@ -134,6 +152,13 @@ export const api = {
   getVersions: (id: number) => request<DocVersion[]>(`/documents/${id}/versions`),
   restoreVersion: (id: number, versionId: number) =>
     request<DocDetail>(`/documents/${id}/versions/${versionId}/restore`, json("POST")),
+
+  // --- folders + RAG chat ---
+  listFolders: () => request<Folder[]>("/folders"),
+  createFolder: (name: string) => request<Folder>("/folders", json("POST", { name })),
+  deleteFolder: (id: number) => request<void>(`/folders/${id}`, json("DELETE")),
+  chatFolder: (id: number, message: string, history: ChatMessage[]) =>
+    request<ChatResponse>(`/folders/${id}/chat`, json("POST", { message, history })),
 
   // --- upload ---
   importFile: (file: File) => {

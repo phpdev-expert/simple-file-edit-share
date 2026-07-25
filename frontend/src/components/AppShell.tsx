@@ -1,10 +1,12 @@
 import { ReactNode, useState } from "react";
-import { User } from "../api";
+import { Folder, User } from "../api";
 import {
   IconChevronDown,
+  IconFolder,
   IconGrid,
   IconLogo,
   IconLogout,
+  IconPlus,
   IconUser,
   IconUsers,
   IconSearch,
@@ -27,6 +29,10 @@ export default function AppShell({
   user,
   view,
   onView,
+  folders,
+  folderId,
+  onSelectFolder,
+  onNewFolder,
   search,
   onSearch,
   onSignOut,
@@ -35,6 +41,10 @@ export default function AppShell({
   user: User;
   view: View;
   onView: (v: View) => void;
+  folders: Folder[];
+  folderId: number | null;
+  onSelectFolder: (id: number) => void;
+  onNewFolder: () => void;
   search: string;
   onSearch: (s: string) => void;
   onSignOut: () => void;
@@ -57,11 +67,32 @@ export default function AppShell({
           {NAV.map((item) => (
             <button
               key={item.key}
-              className={`nav-item ${view === item.key ? "active" : ""}`}
+              className={`nav-item ${view === item.key && folderId === null ? "active" : ""}`}
               onClick={() => onView(item.key)}
             >
               {item.icon}
               {item.label}
+            </button>
+          ))}
+        </nav>
+
+        <nav className="nav-group folders-group">
+          <div className="nav-label">
+            Folders
+            <button className="folder-add" onClick={onNewFolder} title="New folder">
+              <IconPlus size={15} />
+            </button>
+          </div>
+          {folders.length === 0 && <div className="folder-empty">No folders yet</div>}
+          {folders.map((f) => (
+            <button
+              key={f.id}
+              className={`nav-item ${folderId === f.id ? "active" : ""}`}
+              onClick={() => onSelectFolder(f.id)}
+            >
+              <IconFolder />
+              <span className="folder-name">{f.name}</span>
+              <span className="folder-count">{f.doc_count}</span>
             </button>
           ))}
         </nav>

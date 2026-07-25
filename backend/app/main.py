@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .core import config
 from .core.database import Base, SessionLocal, engine
-from .routers import auth, documents, notifications, shares, uploads, ws
+from .routers import auth, documents, folders, notifications, shares, uploads, ws
 from .seed import seed
 
 # Fail fast: never run a production (HTTPS) deploy with the default JWT secret,
@@ -58,6 +58,7 @@ app.include_router(documents.router)
 app.include_router(shares.router)
 app.include_router(uploads.router)
 app.include_router(notifications.router)
+app.include_router(folders.router)
 app.include_router(ws.router)
 
 
@@ -73,8 +74,8 @@ def on_startup():
 
 @app.get("/api/health")
 def health():
-    # Report the DB backend (non-sensitive) so we can confirm persistence in prod.
-    return {"status": "ok", "db": engine.dialect.name}
+    # Report the DB backend + whether LLM chat is configured (both non-sensitive).
+    return {"status": "ok", "db": engine.dialect.name, "llm": config.LLM_ENABLED}
 
 
 # --- Serve the built frontend (production single-service deploy) -------------

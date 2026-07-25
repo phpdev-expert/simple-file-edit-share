@@ -33,6 +33,10 @@ receives a clear "no access" screen.
 | **Documents** | Create, open, inline **rename**, delete. Content persists across refresh and restart. |
 | **Import** | Upload a `.txt`, `.md`, or `.docx` file → converted into a new editable document. `.md` renders to formatted HTML; `.docx` is converted with mammoth (headings, bold/italic, lists preserved). |
 | **Sharing** | Owner shares by **email** with **Can edit** or **View only** roles. Dashboard separates **Owned by me** vs **Shared with me**. Only the owner can share/delete. |
+| **Live editing** | Per-document **presence** (see who's viewing) and **live content sync** over WebSockets — edits appear in other open sessions in real time. |
+| **Notifications** | In-app bell with unread badge; the recipient is notified when a document is shared with them. |
+| **Version history** | Edits are snapshotted (throttled) as you work; open **History** to view and **restore** any prior version. |
+| **Folders + AI chat (RAG)** | Group documents into a **folder**, then **chat with the folder** — an LLM answers grounded in that folder's contents and cites the source documents. |
 | **Export** | Download as **Markdown**, or print/save as **PDF**. |
 | **Auth** | Seeded users, bcrypt-hashed passwords, **JWT** (HS256) sent as a Bearer token and mirrored in an HTTP-only cookie. |
 
@@ -52,8 +56,13 @@ cd backend
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+cp .env.example .env               # optional: add OPENROUTER_API_KEY for folder chat
+uvicorn app.main:app --reload --port 8000 --env-file .env
 ```
+
+> **Folder AI chat** needs an [OpenRouter](https://openrouter.ai/keys) API key in
+> `.env` (`OPENROUTER_API_KEY`, `OPENROUTER_MODEL=openai/gpt-4o`). Without it, every
+> other feature works and chat shows a clear "not configured" message.
 
 On first start it creates the SQLite DB (`backend/docs.db`) and seeds the demo
 users and sample shared document.
@@ -77,7 +86,7 @@ source .venv/bin/activate
 pytest
 ```
 
-17 tests cover JWT authentication, the sharing access-control model, file-import
+30 tests cover JWT authentication, the sharing access-control model, file-import
 behavior (including `.docx` conversion), and security hardening (HTML sanitization,
 response headers).
 
@@ -137,6 +146,8 @@ value, and `COOKIE_SECURE=1`.
 | `DATABASE_URL` | `sqlite:///./docs.db` | SQLAlchemy URL. `postgres://` is auto-normalized. |
 | `SESSION_SECRET` | `dev-secret-change-me` | Secret used to sign JWTs. **Change in prod.** |
 | `COOKIE_SECURE` | `0` | Set to `1` in production (HTTPS-only cookie). |
+| `OPENROUTER_API_KEY` | _(empty)_ | Enables folder AI chat. When empty, chat is disabled cleanly. |
+| `OPENROUTER_MODEL` | `openai/gpt-4o` | Model used for folder chat (OpenRouter). |
 
 ---
 

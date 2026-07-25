@@ -39,6 +39,9 @@ class Document(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False, default="Untitled")
     content: Mapped[str] = mapped_column(Text, nullable=False, default="")
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    folder_id: Mapped[int | None] = mapped_column(
+        ForeignKey("folders.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=_now, onupdate=_now
@@ -69,6 +72,17 @@ class Share(Base):
 
     document: Mapped["Document"] = relationship(back_populates="shares")
     user: Mapped["User"] = relationship()
+
+
+class Folder(Base):
+    """A per-owner folder that groups documents into an LLM knowledge base."""
+
+    __tablename__ = "folders"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), nullable=False)
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
 
 
 class Notification(Base):

@@ -31,6 +31,7 @@ class DocumentSummary(BaseModel):
     title: str
     owner: UserOut
     updated_at: datetime
+    folder_id: Optional[int] = None
     # Populated per-request: the caller's access level for this doc.
     role: Optional[str] = None
 
@@ -43,6 +44,7 @@ class DocumentDetail(BaseModel):
     owner: UserOut
     created_at: datetime
     updated_at: datetime
+    folder_id: Optional[int] = None
     # Set per-request after validation; "owner", "editor" or "viewer".
     role: str = ""
 
@@ -55,6 +57,8 @@ class DocumentListResponse(BaseModel):
 class DocumentUpdate(BaseModel):
     title: Optional[str] = Field(default=None, max_length=255)
     content: Optional[str] = None
+    # Presence of this key (even as null) moves the doc; absence leaves it.
+    folder_id: Optional[int] = None
 
 
 class ShareCreate(BaseModel):
@@ -88,3 +92,28 @@ class VersionSummary(BaseModel):
     title: str
     author_name: str
     created_at: datetime
+
+
+class FolderCreate(BaseModel):
+    name: str = Field(min_length=1, max_length=120)
+
+
+class FolderOut(BaseModel):
+    id: int
+    name: str
+    doc_count: int
+
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str
+
+
+class ChatRequest(BaseModel):
+    message: str = Field(min_length=1)
+    history: list[ChatMessage] = []
+
+
+class ChatResponse(BaseModel):
+    answer: str
+    sources: list[str] = []

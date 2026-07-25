@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEditor, EditorContent, Editor as TiptapEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-import { api, ApiError, DocDetail } from "../api";
+import { api, ApiError, DocDetail, Folder } from "../api";
 import ShareDialog from "../components/ShareDialog";
 import VersionHistory from "../components/VersionHistory";
 import { IconHistory } from "../components/icons";
@@ -24,6 +24,7 @@ export default function EditorPage() {
   const [showShare, setShowShare] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [folders, setFolders] = useState<Folder[]>([]);
 
   const canEdit = doc?.role === "owner" || doc?.role === "editor";
   const isOwner = doc?.role === "owner";
@@ -41,6 +42,17 @@ export default function EditorPage() {
 
   // Live presence + content sync (once the doc is loaded so access is known).
   const { presence } = useDocRealtime(docId, doc ? editor : null, canEdit);
+
+  // Owners can file the document into a folder (knowledge base).
+  useEffect(() => {
+    if (isOwner) api.listFolders().then(setFolders).catch(() => {});
+  }, [isOwner]);
+
+  async function moveToFolder(newFolderId: number | null) {
+    if (!doc) return;
+    await api.updateDocument(docId, { folder_id: newFolderId });
+    setDoc({ ...doc, folder_id: newFolderId });
+  }
 
   // Load the document once, then hydrate the editor.
   useEffect(() => {
@@ -144,6 +156,21 @@ export default function EditorPage() {
               {presence.length === 1 ? "Only you" : `${presence.length} editing`}
             </span>
           </div>
+        )}
+        {isOwner && folders.length > 0 && (
+          <select
+            className="folder-select"
+            value={doc?.folder_id ?? ""}
+            onChange={(e) => moveToFolder(e.target.value ? Number(e.target.value) : null)}
+            title="File in a folder"
+          >
+            <option value="">No folder</option>
+            {folders.map((f) => (
+              <option key={f.id} value={f.id}>
+                📁 {f.name}
+              </option>
+            ))}
+          </select>
         )}
         <button className="btn-secondary" onClick={() => setShowHistory(true)} title="Version history">
           <IconHistory size={17} /> History

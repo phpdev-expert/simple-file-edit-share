@@ -25,3 +25,9 @@ services:
       # HTTPS-only cookie in production.
       - key: COOKIE_SECURE
         value: "1"
+      # Folder AI chat (OpenRouter). Set the key in the Render dashboard (secret);
+      # leave unset to cleanly disable chat. Model has a sensible default.
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: openai/gpt-4o

@@ -79,6 +79,9 @@ def update_document(
     if payload.title is not None:
         title = payload.title.strip()
         doc.title = title or "Untitled"
+    # Only the owner may move a doc between folders; presence of the key = intent.
+    if "folder_id" in payload.model_fields_set and role == "owner":
+        doc.folder_id = payload.folder_id
 
     content_changed = False
     if payload.content is not None:
