@@ -35,4 +35,8 @@ def test_security_headers_present(alice):
     resp = alice.get("/api/documents")
     assert resp.headers.get("X-Content-Type-Options") == "nosniff"
     assert resp.headers.get("X-Frame-Options") == "DENY"
-    assert "default-src 'self'" in resp.headers.get("Content-Security-Policy", "")
+    csp = resp.headers.get("Content-Security-Policy", "")
+    assert "default-src 'self'" in csp
+    assert "script-src 'self'" in csp
+    # Self-hosted + inlined (data:) fonts must both be allowed, or the UI breaks.
+    assert "font-src 'self' data:" in csp

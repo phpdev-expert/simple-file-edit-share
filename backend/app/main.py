@@ -34,6 +34,9 @@ async def security_headers(request: Request, call_next):
         "img-src 'self' data:; "
         "style-src 'self' 'unsafe-inline'; "
         "script-src 'self'; "
+        # Fonts are served from same-origin /assets, but the Vite build inlines
+        # small subsets as data: URIs — allow both. (Fonts can't execute code.)
+        "font-src 'self' data:; "
         "frame-ancestors 'none'; "
         "base-uri 'self'; "
         "form-action 'self'"
