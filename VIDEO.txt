@@ -1,0 +1,11 @@
+Walkthrough video (3–5 min): <ADD YOUR UNLISTED LOOM OR YOUTUBE LINK HERE>
+
+Suggested outline to cover in the recording:
+1. Main user flow — sign in (alice@demo.com / password123), create a document,
+   format text (bold/italic/underline, headings, lists), rename, show autosave.
+2. Import — upload a .txt/.md/.docx file and show it become an editable document.
+3. Sharing — Share with bob@demo.com; sign in as Bob to show "Shared with me";
+   show Carol has no access.
+4. Export — Markdown and PDF.
+5. What was intentionally deprioritized (real-time co-editing, .docx, full auth).
+6. How AI supported the workflow (see AI_WORKFLOW.md).
