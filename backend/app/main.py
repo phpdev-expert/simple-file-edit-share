@@ -71,7 +71,8 @@ def on_startup():
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok"}
+    # Report the DB backend (non-sensitive) so we can confirm persistence in prod.
+    return {"status": "ok", "db": engine.dialect.name}
 
 
 # --- Serve the built frontend (production single-service deploy) -------------
