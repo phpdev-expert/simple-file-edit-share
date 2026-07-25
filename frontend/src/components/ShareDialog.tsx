@@ -57,7 +57,7 @@ export default function ShareDialog({ docId, onClose }: { docId: number; onClose
             <option value="editor">Can edit</option>
             <option value="viewer">View only</option>
           </select>
-          <button className="primary" disabled={busy}>
+          <button className="btn-primary" disabled={busy}>
             Share
           </button>
         </form>
@@ -74,8 +74,14 @@ export default function ShareDialog({ docId, onClose }: { docId: number; onClose
                   <div className="muted small">{s.user.email}</div>
                 </div>
                 <div className="spacer" />
-                <span className="badge small">{s.role === "viewer" ? "View only" : "Can edit"}</span>
-                <button className="ghost danger small" onClick={() => remove(s.user.id)}>
+                <span className={`badge ${s.role === "viewer" ? "viewer" : "editor"}`}>
+                  {s.role === "viewer" ? "View only" : "Can edit"}
+                </span>
+                <button
+                  className="btn-secondary"
+                  style={{ color: "var(--danger)", padding: "0.35rem 0.7rem" }}
+                  onClick={() => remove(s.user.id)}
+                >
                   Remove
                 </button>
               </div>

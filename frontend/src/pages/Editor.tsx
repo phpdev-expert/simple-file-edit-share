@@ -97,7 +97,7 @@ export default function EditorPage() {
         <div className="login-card">
           <h1>Cannot open document</h1>
           <p className="muted">{loadError}</p>
-          <button className="primary" onClick={() => navigate("/")}>
+          <button className="btn-primary full" onClick={() => navigate("/")}>
             Back to documents
           </button>
         </div>
@@ -107,8 +107,8 @@ export default function EditorPage() {
 
   return (
     <>
-      <div className="topbar editor-topbar">
-        <button className="ghost" onClick={() => navigate("/")}>
+      <div className="editor-topbar">
+        <button className="btn-secondary" onClick={() => navigate("/")}>
           ← All docs
         </button>
         <input
@@ -121,9 +121,9 @@ export default function EditorPage() {
         />
         <span className="save-status">
           {saveState === "saving" && "Saving…"}
-          {saveState === "saved" && "All changes saved"}
+          {saveState === "saved" && <span className="ok">✓ All changes saved</span>}
           {saveState === "error" && <span style={{ color: "var(--danger)" }}>Save failed</span>}
-          {!canEdit && "View only"}
+          {saveState === "idle" && !canEdit && "View only"}
         </span>
         <div className="spacer" />
         <div className="dropdown">
@@ -150,7 +150,7 @@ export default function EditorPage() {
           )}
         </div>
         {isOwner && (
-          <button className="primary" onClick={() => setShowShare(true)}>
+          <button className="btn-primary" onClick={() => setShowShare(true)}>
             Share
           </button>
         )}

@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 import { ApiError } from "../api";
+import { IconLogo } from "../components/icons";
 
 export default function Login() {
   const { login, user } = useAuth();
@@ -30,11 +31,12 @@ export default function Login() {
   return (
     <div className="center">
       <form className="login-card" onSubmit={onSubmit}>
-        <div className="login-kicker">Collaborative Docs</div>
-        <h1>
-          Ajaia <em>Docs</em>
-        </h1>
-        <p className="muted small">A calm place to write, share, and ship together.</p>
+        <div className="login-brand">
+          <IconLogo size={26} />
+          Ajaia<span className="brand-accent"> Docs</span>
+        </div>
+        <h1>Sign in</h1>
+        <p className="muted">Welcome back — sign in to your workspace.</p>
 
         <div className="field">
           <label className="label">Email</label>
@@ -47,7 +49,7 @@ export default function Login() {
 
         {error && <div className="error">{error}</div>}
 
-        <button className="primary" style={{ width: "100%", marginTop: "0.5rem" }} disabled={busy}>
+        <button className="btn-primary full" disabled={busy}>
           {busy ? "Signing in…" : "Sign in"}
         </button>
 
