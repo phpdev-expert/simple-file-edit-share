@@ -1,5 +1,11 @@
-# Render Blueprint — deploys the whole app as a single Docker web service.
-# See README for the click-through steps and required environment variables.
+# Render Blueprint — provisions a free Postgres + the Docker web service and
+# wires them together. In Render: New → Blueprint → pick this repo → Apply.
+databases:
+  - name: ajaia-docs-db
+    plan: free
+    databaseName: ajaia
+    user: ajaia
+
 services:
   - type: web
     name: ajaia-docs
@@ -8,12 +14,14 @@ services:
     plan: free
     healthCheckPath: /api/health
     envVars:
+      # Auto-wired from the managed Postgres above (persists across restarts).
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ajaia-docs-db
+          property: connectionString
+      # Strong JWT signing secret, generated once by Render.
       - key: SESSION_SECRET
         generateValue: true
+      # HTTPS-only cookie in production.
       - key: COOKIE_SECURE
         value: "1"
-      # Set DATABASE_URL to a Postgres connection string (e.g. Neon free tier)
-      # so documents persist across restarts. Falls back to ephemeral SQLite
-      # if omitted.
-      - key: DATABASE_URL
-        sync: false
