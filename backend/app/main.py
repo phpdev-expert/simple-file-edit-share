@@ -6,9 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from . import config
-from .database import Base, SessionLocal, engine
-from .routers import auth, documents, shares, uploads
+from .core import config
+from .core.database import Base, SessionLocal, engine
+from .routers import auth, documents, notifications, shares, uploads, ws
 from .seed import seed
 
 # Fail fast: never run a production (HTTPS) deploy with the default JWT secret,
@@ -57,6 +57,8 @@ app.include_router(auth.router)
 app.include_router(documents.router)
 app.include_router(shares.router)
 app.include_router(uploads.router)
+app.include_router(notifications.router)
+app.include_router(ws.router)
 
 
 @app.on_event("startup")

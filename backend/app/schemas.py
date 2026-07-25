@@ -66,3 +66,25 @@ class ShareOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     user: UserOut
     role: str
+
+
+class NotificationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    message: str
+    document_id: Optional[int] = None
+    read: bool
+    created_at: datetime
+
+
+class NotificationList(BaseModel):
+    items: list[NotificationOut]
+    unread: int
+
+
+class VersionSummary(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    title: str
+    author_name: str
+    created_at: datetime

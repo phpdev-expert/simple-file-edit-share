@@ -5,6 +5,9 @@ import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import { api, ApiError, DocDetail } from "../api";
 import ShareDialog from "../components/ShareDialog";
+import VersionHistory from "../components/VersionHistory";
+import { IconHistory } from "../components/icons";
+import { useDocRealtime } from "../useDocRealtime";
 import { exportMarkdown, exportPdf } from "../export";
 
 type SaveState = "idle" | "saving" | "saved" | "error";
@@ -20,6 +23,7 @@ export default function EditorPage() {
   const [loadError, setLoadError] = useState("");
   const [showShare, setShowShare] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const canEdit = doc?.role === "owner" || doc?.role === "editor";
   const isOwner = doc?.role === "owner";
@@ -34,6 +38,9 @@ export default function EditorPage() {
     },
     []
   );
+
+  // Live presence + content sync (once the doc is loaded so access is known).
+  const { presence } = useDocRealtime(docId, doc ? editor : null, canEdit);
 
   // Load the document once, then hydrate the editor.
   useEffect(() => {
@@ -126,6 +133,21 @@ export default function EditorPage() {
           {saveState === "idle" && !canEdit && "View only"}
         </span>
         <div className="spacer" />
+        {presence.length > 0 && (
+          <div className="presence" title={`${presence.length} here: ${presence.map((p) => p.name).join(", ")}`}>
+            {presence.slice(0, 4).map((p) => (
+              <span key={p.id} className="presence-avatar" title={p.name}>
+                {p.name.slice(0, 1).toUpperCase()}
+              </span>
+            ))}
+            <span className="presence-label">
+              {presence.length === 1 ? "Only you" : `${presence.length} editing`}
+            </span>
+          </div>
+        )}
+        <button className="btn-secondary" onClick={() => setShowHistory(true)} title="Version history">
+          <IconHistory size={17} /> History
+        </button>
         <div className="dropdown">
           <button onClick={() => setShowExport((v) => !v)}>Export ▾</button>
           {showExport && (
@@ -165,6 +187,14 @@ export default function EditorPage() {
       </div>
 
       {showShare && <ShareDialog docId={docId} onClose={() => setShowShare(false)} />}
+      {showHistory && (
+        <VersionHistory
+          docId={docId}
+          canEdit={canEdit}
+          onClose={() => setShowHistory(false)}
+          onRestored={(html) => editor?.commands.setContent(html || "<p></p>")}
+        />
+      )}
     </>
   );
 }

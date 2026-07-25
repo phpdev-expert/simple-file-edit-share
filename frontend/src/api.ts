@@ -29,6 +29,21 @@ export interface Share {
   role: string;
 }
 
+export interface Notification {
+  id: number;
+  message: string;
+  document_id: number | null;
+  read: boolean;
+  created_at: string;
+}
+
+export interface DocVersion {
+  id: number;
+  title: string;
+  author_name: string;
+  created_at: string;
+}
+
 export interface LoginResponse {
   access_token: string;
   token_type: string;
@@ -52,6 +67,10 @@ export function setAuthToken(token: string | null) {
   authToken = token;
   if (token) localStorage.setItem(TOKEN_KEY, token);
   else localStorage.removeItem(TOKEN_KEY);
+}
+
+export function getAuthToken(): string | null {
+  return authToken;
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -105,6 +124,16 @@ export const api = {
     request<Share>(`/documents/${id}/shares`, json("POST", { email, role })),
   removeShare: (id: number, userId: number) =>
     request<void>(`/documents/${id}/shares/${userId}`, json("DELETE")),
+
+  // --- notifications ---
+  getNotifications: () =>
+    request<{ items: Notification[]; unread: number }>("/notifications"),
+  markNotificationsRead: () => request<{ ok: boolean }>("/notifications/read", json("POST")),
+
+  // --- version history ---
+  getVersions: (id: number) => request<DocVersion[]>(`/documents/${id}/versions`),
+  restoreVersion: (id: number, versionId: number) =>
+    request<DocDetail>(`/documents/${id}/versions/${versionId}/restore`, json("POST")),
 
   // --- upload ---
   importFile: (file: File) => {

@@ -2,15 +2,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from ..auth import get_current_user, get_document_for_user
-from ..database import get_db
-from ..models import Share, User
+from ..core.database import get_db
+from ..deps import get_current_user, get_document_for_user
+from ..models import Document, Share, User
 from ..schemas import ShareCreate, ShareOut
+from ..services import notifications as notif_svc
 
 router = APIRouter(prefix="/api/documents/{document_id}/shares", tags=["shares"])
 
 
-def _require_owner(document_id: int, db: Session, user: User):
+def _require_owner(document_id: int, db: Session, user: User) -> Document:
     doc, role = get_document_for_user(document_id, db, user)
     if role != "owner":
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Only the owner can manage sharing")
@@ -32,7 +33,7 @@ def create_share(
     db: Session = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
-    _require_owner(document_id, db, user)
+    doc = _require_owner(document_id, db, user)
 
     target = db.query(User).filter(User.email == payload.email.lower()).first()
     if target is None:
@@ -45,11 +46,23 @@ def create_share(
         .filter(Share.document_id == document_id, Share.user_id == target.id)
         .first()
     )
+    is_new = share is None
     if share:  # idempotent: update role instead of duplicating
         share.role = payload.role
     else:
         share = Share(document_id=document_id, user_id=target.id, role=payload.role)
         db.add(share)
+
+    # Notify the recipient (only on a fresh share, not a role change).
+    if is_new:
+        access = "edit" if payload.role == "editor" else "view"
+        notif_svc.notify(
+            db,
+            target.id,
+            f'{user.name} shared "{doc.title}" with you ({access} access)',
+            document_id=document_id,
+        )
+
     db.commit()
     db.refresh(share)
     return share

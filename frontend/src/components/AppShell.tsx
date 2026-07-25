@@ -5,11 +5,11 @@ import {
   IconGrid,
   IconLogo,
   IconLogout,
-  IconShare,
   IconUser,
   IconUsers,
   IconSearch,
 } from "./icons";
+import NotificationBell from "./NotificationBell";
 
 export type View = "all" | "owned" | "shared";
 
@@ -86,6 +86,7 @@ export default function AppShell({
             />
           </div>
           <div className="spacer" />
+          <NotificationBell />
           <div className="userbox">
             <button className="user-btn" onClick={() => setMenuOpen((v) => !v)}>
               <span className="avatar">{initials(user.name)}</span>

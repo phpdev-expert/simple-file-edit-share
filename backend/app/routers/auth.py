@@ -2,14 +2,14 @@
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.orm import Session
 
-from ..auth import (
+from ..core.database import get_db
+from ..core.security import (
     clear_auth_cookie,
     create_access_token,
-    get_current_user,
     set_auth_cookie,
     verify_password,
 )
-from ..database import get_db
+from ..deps import get_current_user
 from ..models import User
 from ..schemas import LoginRequest, LoginResponse, UserOut
 
@@ -23,8 +23,7 @@ def login(payload: LoginRequest, response: Response, db: Session = Depends(get_d
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid email or password")
 
     token = create_access_token(user.id)
-    # Set as an HTTP-only cookie for the browser SPA; also return it in the body
-    # so non-browser API clients can use it as a Bearer token.
+    # HTTP-only cookie for the browser SPA; also returned in the body for API clients.
     set_auth_cookie(response, token)
     return LoginResponse(access_token=token, user=user)
 

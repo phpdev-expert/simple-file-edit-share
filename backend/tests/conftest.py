@@ -13,8 +13,8 @@ _tmp.close()
 os.environ["DATABASE_URL"] = f"sqlite:///{_tmp.name}"
 os.environ["SESSION_SECRET"] = "test-secret"
 
-from app import config  # noqa: E402
-from app.database import Base, get_db  # noqa: E402
+from app.core import config  # noqa: E402
+from app.core.database import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402
 from app.seed import DEMO_PASSWORD  # noqa: E402
 

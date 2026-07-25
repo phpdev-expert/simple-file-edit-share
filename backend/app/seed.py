@@ -1,8 +1,8 @@
 """Idempotently seed demo users (and a sample shared document) on startup."""
 from sqlalchemy.orm import Session
 
-from .auth import hash_password
-from .models import Document, Share, User
+from .core.security import hash_password
+from .models import Document, Notification, Share, User
 
 DEMO_PASSWORD = "password123"
 DEMO_USERS = [
@@ -45,4 +45,11 @@ def seed(db: Session) -> None:
         db.add(doc)
         db.flush()
         db.add(Share(document_id=doc.id, user_id=bob.id, role="editor"))
+        db.add(
+            Notification(
+                user_id=bob.id,
+                message=f'{alice.name} shared "{doc.title}" with you (edit access)',
+                document_id=doc.id,
+            )
+        )
         db.commit()

@@ -108,6 +108,21 @@ export const IconLogo = ({ size = 26, className }: P) => (
   </svg>
 );
 
+export const IconBell = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+  </svg>
+);
+
+export const IconHistory = ({ size, className }: P) => (
+  <svg {...base(size)} className={className}>
+    <path d="M3 3v5h5" />
+    <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+    <path d="M12 7v5l4 2" />
+  </svg>
+);
+
 export const IconDots = ({ size, className }: P) => (
   <svg {...base(size)} className={className}>
     <circle cx="12" cy="5" r="1.4" />

@@ -8,10 +8,10 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "sqlite:///./docs.db")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-# Secret used to sign the session cookie. Override in production.
+# Secret used to sign JWTs / the session cookie. Override in production.
 SESSION_SECRET = os.environ.get("SESSION_SECRET", "dev-secret-change-me")
 
-# Cookie lifetime in seconds (7 days).
+# Token / cookie lifetime in seconds (7 days).
 SESSION_MAX_AGE = 60 * 60 * 24 * 7
 COOKIE_NAME = "session"
 
@@ -22,8 +22,9 @@ COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "0") == "1"
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5 MB (.docx files are heavier than text)
 ALLOWED_UPLOAD_EXTS = {".txt", ".md", ".docx"}
 
-# Absolute path to the built frontend (populated at deploy time). Optional locally.
+# Absolute path to the built frontend. This file lives at app/core/config.py, so
+# three levels up is the backend dir; the SPA build sits at repo/frontend/dist.
+_BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FRONTEND_DIST = os.environ.get(
-    "FRONTEND_DIST",
-    os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "frontend", "dist"),
+    "FRONTEND_DIST", os.path.join(_BACKEND_DIR, "..", "frontend", "dist")
 )

@@ -8,12 +8,12 @@ import markdown as md
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
-from .. import config
-from ..auth import get_current_user
-from ..database import get_db
+from ..core import config
+from ..core.database import get_db
+from ..core.security import sanitize_html
+from ..deps import get_current_user
 from ..models import Document, User
 from ..schemas import DocumentDetail
-from ..security import sanitize_html
 
 router = APIRouter(prefix="/api/uploads", tags=["uploads"])
 
