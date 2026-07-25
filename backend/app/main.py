@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import inspect, text
 
 from .core import config
 from .core.database import Base, SessionLocal, engine
@@ -62,9 +63,25 @@ app.include_router(folders.router)
 app.include_router(ws.router)
 
 
+def ensure_schema():
+    """Create new tables and add columns added since an existing DB was created.
+
+    A lightweight stand-in for full migrations (e.g. Alembic): create_all() makes
+    new tables, and we additively backfill known new columns on existing tables so
+    a persistent Postgres from an earlier release keeps working after a deploy.
+    """
+    Base.metadata.create_all(bind=engine)
+    insp = inspect(engine)
+    if insp.has_table("documents"):
+        cols = {c["name"] for c in insp.get_columns("documents")}
+        if "folder_id" not in cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE documents ADD COLUMN folder_id INTEGER"))
+
+
 @app.on_event("startup")
 def on_startup():
-    Base.metadata.create_all(bind=engine)
+    ensure_schema()
     db = SessionLocal()
     try:
         seed(db)
